@@ -1,0 +1,42 @@
+{
+  "name": "ignite-node-challenge-one",
+  "version": "1.0.0",
+  "description": "Nesse desafio você desenvolverá uma API para realizar o CRUD de suas tasks (tarefas).",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/main.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dfsilvadev/ignite-node-challenge-one.git"
+  },
+  "author": "Daniel Silva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dfsilvadev/ignite-node-challenge-one/issues"
+  },
+  "homepage": "https://github.com/dfsilvadev/ignite-node-challenge-one#readme",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.34.0",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
+    "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0"
+  }
+}
