@@ -12,15 +12,15 @@ export default defineConfig([
       parser: tseslint.parser,
       parserOptions: {
         ecmaVersion: "latest",
-        sourceType: "module",
+        sourceType: "module"
       },
       globals: {
-        ...globals.node,
-      },
+        ...globals.node
+      }
     },
     plugins: {
       js,
-      prettier: prettierPlugin,
+      prettier: prettierPlugin
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -28,11 +28,11 @@ export default defineConfig([
       "no-console": "error",
       "no-unused-vars": [
         "error",
-        { args: "after-used", argsIgnorePattern: "^_" },
+        { args: "after-used", argsIgnorePattern: "^_" }
       ],
-      "prettier/prettier": "warn",
-    },
+      "prettier/prettier": "warn"
+    }
   },
 
-  prettierConfig,
+  prettierConfig
 ]);
