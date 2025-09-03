@@ -1,0 +1,12 @@
+{
+  "tasks": [
+    {
+      "id": "5905a1b3-215c-472c-9caa-092335507fe8",
+      "title": "Fundamentos do Node.js",
+      "description": "Estudar os fundamentos do Node.js e praticar",
+      "completed_at": null,
+      "created_at": "2025-09-03T11:18:05.394Z",
+      "updated_at": "2025-09-03T11:18:05.394Z"
+    }
+  ]
+}
