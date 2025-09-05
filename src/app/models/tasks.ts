@@ -26,7 +26,15 @@ interface UpdateTaskParams {
   description?: string;
 }
 
+interface ApiResponse<T = any> {
+  status: "Ok" | "Error";
+  details?: T;
+  message?: string;
+  imported?: number;
+}
+
 export {
+  ApiResponse,
   CreateTaskParams,
   Database,
   DATABASE_TABLE,
