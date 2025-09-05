@@ -5,18 +5,49 @@ import path from "node:path";
 
 import taskRepository from "../repositories/taskRepository";
 
-import { DATABASE_TABLE, Task } from "../models/tasks";
+import { ApiResponse, DATABASE_TABLE, Task } from "../models/tasks";
 
 class TaskController {
+  #sendSuccess<T>(res: Response, statusCode: number, data: T): void {
+    const response: ApiResponse<T> = {
+      status: "Ok",
+      details: data
+    };
+    res.status(statusCode).json(response);
+  }
+
+  #sendError(res: Response, statusCode: number, message: string): void {
+    const response: ApiResponse = {
+      status: "Error",
+      message
+    };
+    res.status(statusCode).json(response);
+  }
+
+  #sendImportSuccess(
+    res: Response,
+    statusCode: number,
+    message: string,
+    imported: number
+  ): void {
+    const response: ApiResponse = {
+      status: "Ok",
+      message,
+      imported
+    };
+    res.status(statusCode).json(response);
+  }
+
   listTasks(_req: Request, res: Response) {
     try {
       const tasks = taskRepository.list(DATABASE_TABLE);
-      res.status(200).json({ status: "Ok", details: tasks });
+      this.#sendSuccess<Task[]>(res, 200, tasks);
     } catch (err) {
-      res.status(500).json({
-        status: "Error",
-        details: err instanceof Error ? err.message : "UNKNOWN_ERROR"
-      });
+      this.#sendError(
+        res,
+        500,
+        err instanceof Error ? err.message : "UNKNOWN_ERROR"
+      );
     }
   }
 
@@ -29,15 +60,13 @@ class TaskController {
         description
       });
 
-      res.status(201).json({
-        status: "OK",
-        details: createdTask
-      });
+      this.#sendSuccess<Task>(res, 201, createdTask as Task);
     } catch (err) {
-      res.status(500).json({
-        status: "Error",
-        details: err instanceof Error ? err.message : "UNKNOWN_ERROR"
-      });
+      this.#sendError(
+        res,
+        500,
+        err instanceof Error ? err.message : "UNKNOWN_ERROR"
+      );
     }
   }
 
@@ -68,23 +97,23 @@ class TaskController {
     parser.on("end", async () => {
       try {
         fs.unlinkSync(filePath);
-        res.status(201).json({
-          status: "OK",
-          message: "IMPORTED_SUCCESSFULLY",
-          imported: tasks.length
-        });
+        this.#sendImportSuccess(
+          res,
+          201,
+          "IMPORTED_SUCCESSFULLY",
+          tasks.length
+        );
       } catch (err) {
-        res.status(500).json({
-          status: "Error",
-          details: err instanceof Error ? err.message : "UNKNOWN_ERROR"
-        });
+        this.#sendError(
+          res,
+          500,
+          err instanceof Error ? err.message : "UNKNOWN_ERROR"
+        );
       }
     });
 
     parser.on("error", () => {
-      res
-        .status(500)
-        .json({ status: "Error", details: "ERROR_PARSING_CSV_FILE" });
+      this.#sendError(res, 500, "ERROR_PARSING_CSV_FILE");
     });
   }
 
@@ -98,20 +127,17 @@ class TaskController {
         ...(description && { description })
       });
 
-      if (!updatedTask)
-        return res
-          .status(404)
-          .json({ status: "Error", message: "TASK_NOT_FOUND" });
+      if (!updatedTask) {
+        return this.#sendError(res, 404, "TASK_NOT_FOUND");
+      }
 
-      res.status(200).json({
-        status: "OK",
-        details: updatedTask
-      });
+      this.#sendSuccess<Task>(res, 200, updatedTask);
     } catch (err) {
-      res.status(500).json({
-        status: "Error",
-        details: err instanceof Error ? err.message : "UNKNOWN_ERROR"
-      });
+      this.#sendError(
+        res,
+        500,
+        err instanceof Error ? err.message : "UNKNOWN_ERROR"
+      );
     }
   }
 
@@ -121,17 +147,17 @@ class TaskController {
     try {
       const completedTask = taskRepository.asCompleted(DATABASE_TABLE, id);
 
-      if (!completedTask)
-        return res
-          .status(404)
-          .json({ status: "Error", message: "TASK_NOT_FOUND" });
+      if (!completedTask) {
+        return this.#sendError(res, 404, "TASK_NOT_FOUND");
+      }
 
-      res.status(200).json({ status: "OK", details: completedTask });
+      this.#sendSuccess<Task>(res, 200, completedTask);
     } catch (err) {
-      res.status(500).json({
-        status: "Error",
-        details: err instanceof Error ? err.message : "UNKNOWN_ERROR"
-      });
+      this.#sendError(
+        res,
+        500,
+        err instanceof Error ? err.message : "UNKNOWN_ERROR"
+      );
     }
   }
 
@@ -141,20 +167,17 @@ class TaskController {
     try {
       const deletedTask = taskRepository.remove(DATABASE_TABLE, id);
 
-      if (!deletedTask)
-        return res
-          .status(404)
-          .json({ status: "Error", message: "TASK_NOT_FOUND" });
+      if (!deletedTask) {
+        return this.#sendError(res, 404, "TASK_NOT_FOUND");
+      }
 
-      res.status(200).json({
-        status: "OK",
-        details: deletedTask
-      });
+      this.#sendSuccess<Task[]>(res, 200, deletedTask);
     } catch (err) {
-      res.status(500).json({
-        status: "Error",
-        details: err instanceof Error ? err.message : "UNKNOWN_ERROR"
-      });
+      this.#sendError(
+        res,
+        500,
+        err instanceof Error ? err.message : "UNKNOWN_ERROR"
+      );
     }
   }
 }
