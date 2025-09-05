@@ -18,9 +18,8 @@ app.use(express.json());
 /**
  * Routes
  */
-app.get("/", (_req, res) => {
-  res.send("🔥 API started");
-});
+import router from "./app/routes/router";
+app.use(router);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
