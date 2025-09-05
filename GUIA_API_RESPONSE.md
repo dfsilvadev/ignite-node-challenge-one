@@ -85,7 +85,7 @@ const importResponse: ApiResponse = {
 ```typescript
 class TaskController {
   // Para respostas de sucesso com dados
-  private sendSuccess<T>(res: Response, statusCode: number, data: T): void {
+  #sendSuccess<T>(res: Response, statusCode: number, data: T): void {
     const response: ApiResponse<T> = {
       status: "Ok",
       details: data
@@ -94,7 +94,7 @@ class TaskController {
   }
 
   // Para respostas de erro
-  private sendError(res: Response, statusCode: number, message: string): void {
+  #sendError(res: Response, statusCode: number, message: string): void {
     const response: ApiResponse = {
       status: "Error",
       message
@@ -102,23 +102,8 @@ class TaskController {
     res.status(statusCode).json(response);
   }
 
-  // Para respostas de sucesso com mensagem
-  private sendSuccessWithMessage<T>(
-    res: Response,
-    statusCode: number,
-    message: string,
-    data?: T
-  ): void {
-    const response: ApiResponse<T> = {
-      status: "OK",
-      message,
-      ...(data && { details: data })
-    };
-    res.status(statusCode).json(response);
-  }
-
   // Para respostas de importação
-  private sendImportSuccess(
+  #sendImportSuccess(
     res: Response,
     statusCode: number,
     message: string,
@@ -141,9 +126,9 @@ class TaskController {
 listTasks(_req: Request, res: Response) {
   try {
     const tasks = taskRepository.list(DATABASE_TABLE);
-    this.sendSuccess<Task[]>(res, 200, tasks);
+    this.#sendSuccess<Task[]>(res, 200, tasks);
   } catch (err) {
-    this.sendError(res, 500, err instanceof Error ? err.message : "UNKNOWN_ERROR");
+    this.#sendError(res, 500, err instanceof Error ? err.message : "UNKNOWN_ERROR");
   }
 }
 
@@ -151,9 +136,9 @@ listTasks(_req: Request, res: Response) {
 createTask(req: Request, res: Response) {
   try {
     const createdTask = taskRepository.create(DATABASE_TABLE, req.body);
-    this.sendSuccess<Task>(res, 201, createdTask as Task);
+    this.#sendSuccess<Task>(res, 201, createdTask as Task);
   } catch (err) {
-    this.sendError(res, 500, err instanceof Error ? err.message : "UNKNOWN_ERROR");
+    this.#sendError(res, 500, err instanceof Error ? err.message : "UNKNOWN_ERROR");
   }
 }
 
@@ -163,12 +148,12 @@ updateTask(req: Request, res: Response) {
     const updatedTask = taskRepository.update(DATABASE_TABLE, req.params.id, req.body);
 
     if (!updatedTask) {
-      return this.sendError(res, 404, "TASK_NOT_FOUND");
+      return this.#sendError(res, 404, "TASK_NOT_FOUND");
     }
 
-    this.sendSuccess<Task>(res, 200, updatedTask);
+    this.#sendSuccess<Task>(res, 200, updatedTask);
   } catch (err) {
-    this.sendError(res, 500, err instanceof Error ? err.message : "UNKNOWN_ERROR");
+    this.#sendError(res, 500, err instanceof Error ? err.message : "UNKNOWN_ERROR");
   }
 }
 ```
@@ -202,7 +187,7 @@ O editor oferece autocomplete completo para as propriedades da resposta.
 ### 4. **Validação em Tempo de Compilação**
 
 ```typescript
-// ❌ Erro: 'status' deve ser "Ok", "OK" ou "Error"
+// ❌ Erro: 'status' deve ser "Ok" ou "Error"
 const invalidResponse: ApiResponse = {
   status: "Success", // Erro!
   details: []
@@ -305,7 +290,7 @@ const tasks = response.details; // Pode ser undefined
 
 ```typescript
 // ✅ Bom
-this.sendSuccess<Task[]>(res, 200, tasks);
+this.#sendSuccess<Task[]>(res, 200, tasks);
 
 // ❌ Evite
 res.status(200).json({ status: "Ok", details: tasks });
